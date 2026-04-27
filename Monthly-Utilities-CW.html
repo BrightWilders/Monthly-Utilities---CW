@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monthly Utilities GL Summary</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eff6ff;
+      --danger: #b91c1c;
+      --success: #047857;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.5fr 0.8fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f9fafb;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    td input, td select {
+      padding: 8px 9px;
+      font-size: 14px;
+    }
+
+    .amount-input {
+      text-align: right;
+    }
+
+    .fixed-fee {
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    .summary-table td:last-child,
+    .summary-table th:last-child {
+      text-align: right;
+    }
+
+    .grand-total {
+      font-weight: 800;
+      background: #f3f4f6;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .secondary:hover {
+      background: #d1d5db;
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .danger:hover {
+      background: #fecaca;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    .copy-box {
+      width: 100%;
+      min-height: 130px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+      resize: vertical;
+      background: #f9fafb;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #1e40af;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .button-row, .note.no-print {
+        display: none;
+      }
+
+      .header, .card, .controls {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Monthly Utilities GL Summary</h1>
+      <p>Enter the monthly utility amounts below. The credit card fee stays fixed at $3.07 and the GL summary updates automatically.</p>
+    </div>
+
+    <div class="controls">
+      <div>
+        <label for="month">Month</label>
+        <input id="month" type="month" />
+      </div>
+      <div>
+        <label for="fixedFee">Fixed Credit Card Fee</label>
+        <input id="fixedFee" type="number" step="0.01" value="3.07" readonly />
+      </div>
+      <div>
+        <label for="preparedBy">Prepared By</label>
+        <input id="preparedBy" type="text" placeholder="Optional" />
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2>Monthly Entry</h2>
+        <table id="entryTable">
+          <thead>
+            <tr>
+              <th style="width: 90px;">Invoice Order</th>
+              <th style="width: 140px;">Amount</th>
+              <th>Category</th>
+              <th style="width: 120px;">GL</th>
+              <th style="width: 190px;">Type</th>
+              <th style="width: 70px;">Remove</th>
+            </tr>
+          </thead>
+          <tbody id="entryBody"></tbody>
+        </table>
+
+        <div class="button-row">
+          <button onclick="addRow()">+ Add Row</button>
+          <button class="secondary" onclick="addDefaultRows()">Reset Monthly Template</button>
+          <button class="secondary" onclick="clearAmountsOnly()">Clear Amounts Only</button>
+          <button class="danger" onclick="clearAllRows()">Clear All Rows</button>
+        </div>
+
+        <p class="note no-print">Tip: enter credits as negative numbers. Example: -25.00</p>
+      </div>
+
+      <div class="card">
+        <span class="pill">Auto Summary</span>
+        <h2>GL Summary</h2>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>GL</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+
+        <div class="button-row">
+          <button onclick="copySummary()">Copy Summary</button>
+          <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+        </div>
+
+        <h2 style="margin-top: 22px;">Copy/Paste Summary</h2>
+        <textarea id="copyBox" class="copy-box" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultRows = [
+      { amount: '119.38', category: 'Water', gl: '7902', type: 'Domestic Water', invoiceOrder: '1' },
+      { amount: '152.10', category: 'Water', gl: '7902', type: 'Sewer/Wastewater', invoiceOrder: '2' },
+      { amount: '115.59', category: 'Waste', gl: '7906', type: 'Solid Waste', invoiceOrder: '3' },
+      { amount: '16.18', category: 'Water', gl: '7902', type: 'Stormwater', invoiceOrder: '4' },
+      { amount: '35.60', category: 'Gas', gl: '7905', type: 'Natural Gas', invoiceOrder: '5' },
+      { amount: '30.60', category: 'Water', gl: '7902', type: 'Reclaimed Water', invoiceOrder: '6' },
+      { amount: '', category: 'Gas', gl: '7905', type: 'Utility Tax on Gas', invoiceOrder: '7' },
+      { amount: '', category: 'Water', gl: '7902', type: 'Utility Tax on Water', invoiceOrder: '8' },
+      { amount: '', category: 'Water', gl: '7902', type: 'Franchise Fee', invoiceOrder: '9' },
+      { amount: '', category: 'Water', gl: '7902', type: 'State Gross Tax', invoiceOrder: '10' },
+      { amount: '3.07', category: 'Water', gl: '7902', type: 'CC FEE', invoiceOrder: '', fixed: true },
+      { amount: '', category: 'Gas', gl: '7905', type: 'Credits', invoiceOrder: '' },
+      { amount: '', category: 'Water', gl: '7902', type: 'Credits', invoiceOrder: '' },
+      { amount: '', category: 'Waste', gl: '7906', type: 'Credits', invoiceOrder: '' },
+      { amount: '', category: 'Water', gl: '7902', type: 'Credits', invoiceOrder: '' },
+      { amount: '', category: 'Water', gl: '7902', type: 'Credits', invoiceOrder: '' }
+    ];
+
+    let rows = [];
+
+    function money(value) {
+      const num = Number(value) || 0;
+      return num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+
+    function setCurrentMonth() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      document.getElementById('month').value = `${yyyy}-${mm}`;
+    }
+
+    function addDefaultRows() {
+      rows = JSON.parse(JSON.stringify(defaultRows));
+      render();
+    }
+
+    function addRow() {
+      rows.push({ amount: '', category: 'Water', gl: '7902', type: '', invoiceOrder: '' });
+      render();
+    }
+
+    function clearAllRows() {
+      rows = [];
+      render();
+    }
+
+    function clearAmountsOnly() {
+      rows = rows.map(row => {
+        if (row.fixed) return row;
+        return { ...row, amount: '' };
+      });
+      render();
+    }
+
+    function removeRow(index) {
+      rows.splice(index, 1);
+      render();
+    }
+
+    function updateRow(index, field, value) {
+      rows[index][field] = value;
+
+      if (field === 'category') {
+        if (value === 'Water') rows[index].gl = '7902';
+        if (value === 'Gas') rows[index].gl = '7905';
+        if (value === 'Waste') rows[index].gl = '7906';
+      }
+
+      render();
+    }
+
+    function render() {
+      const entryBody = document.getElementById('entryBody');
+      entryBody.innerHTML = '';
+
+      rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        if (row.fixed) tr.classList.add('fixed-fee');
+
+        tr.innerHTML = `
+          <td>
+            <input type="text" value="${row.invoiceOrder || ''}" onchange="updateRow(${index}, 'invoiceOrder', this.value)" />
+          </td>
+          <td>
+            <input class="amount-input" type="number" step="0.01" value="${row.amount}" ${row.fixed ? 'readonly' : ''} onchange="updateRow(${index}, 'amount', this.value)" />
+          </td>
+          <td>
+            <select onchange="updateRow(${index}, 'category', this.value)">
+              <option value="Water" ${row.category === 'Water' ? 'selected' : ''}>Water</option>
+              <option value="Gas" ${row.category === 'Gas' ? 'selected' : ''}>Gas</option>
+              <option value="Waste" ${row.category === 'Waste' ? 'selected' : ''}>Waste</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" value="${row.gl || ''}" onchange="updateRow(${index}, 'gl', this.value)" />
+          </td>
+          <td>
+            <input type="text" value="${row.type || ''}" onchange="updateRow(${index}, 'type', this.value)" />
+          </td>
+          <td>
+            <button class="danger" onclick="removeRow(${index})" ${row.fixed ? 'disabled style="opacity:.4; cursor:not-allowed;"' : ''}>X</button>
+          </td>
+        `;
+
+        entryBody.appendChild(tr);
+      });
+
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const summary = {
+        '7902': 0,
+        '7905': 0,
+        '7906': 0
+      };
+
+      rows.forEach(row => {
+        const gl = row.gl || 'No GL';
+        const amount = Number(row.amount) || 0;
+        if (!summary.hasOwnProperty(gl)) summary[gl] = 0;
+        summary[gl] += amount;
+      });
+
+      const summaryBody = document.getElementById('summaryBody');
+      summaryBody.innerHTML = '';
+
+      let grandTotal = 0;
+
+      Object.keys(summary).sort().forEach(gl => {
+        const amount = summary[gl];
+        grandTotal += amount;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${gl}</td><td>${money(amount)}</td>`;
+        summaryBody.appendChild(tr);
+      });
+
+      const totalRow = document.createElement('tr');
+      totalRow.classList.add('grand-total');
+      totalRow.innerHTML = `<td>Grand Total</td><td>${money(grandTotal)}</td>`;
+      summaryBody.appendChild(totalRow);
+
+      updateCopyBox(summary, grandTotal);
+    }
+
+    function updateCopyBox(summary, grandTotal) {
+      const monthValue = document.getElementById('month').value;
+      const preparedBy = document.getElementById('preparedBy').value;
+      const monthText = monthValue ? new Date(monthValue + '-01').toLocaleString('en-US', { month: 'long', year: 'numeric' }) : '';
+
+      let text = '';
+      if (monthText) text += `${monthText} Utilities GL Summary\n`;
+      if (preparedBy) text += `Prepared By: ${preparedBy}\n`;
+      text += `\nGL\tAmount\n`;
+
+      Object.keys(summary).sort().forEach(gl => {
+        text += `${gl}\t${money(summary[gl])}\n`;
+      });
+
+      text += `Grand Total\t${money(grandTotal)}`;
+      document.getElementById('copyBox').value = text;
+    }
+
+    function copySummary() {
+      const copyBox = document.getElementById('copyBox');
+      copyBox.select();
+      document.execCommand('copy');
+      alert('Summary copied!');
+    }
+
+    document.getElementById('month').addEventListener('change', renderSummary);
+    document.getElementById('preparedBy').addEventListener('input', renderSummary);
+
+    setCurrentMonth();
+    addDefaultRows();
+  </script>
+</body>
+</html>
