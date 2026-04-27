@@ -9,7 +9,7 @@
       font-family: Arial, Helvetica, sans-serif;
       background: #f6f7fb;
       color: #1f2937;
-      padding: 24px;
+      padding: 16px;
       margin: 0;
     }
 
@@ -21,68 +21,106 @@
     .header {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: white;
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 20px;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
     }
 
     .header h1 {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 14px;
     }
 
     .card {
       background: white;
       border: 1px solid #d1d5db;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 20px;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: 1.5fr 0.8fr;
-      gap: 20px;
+      grid-template-columns: 1.7fr 0.8fr;
+      gap: 14px;
       align-items: start;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #6b7280;
     }
 
     input, select {
       width: 100%;
-      padding: 8px;
+      padding: 6px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 7px;
       box-sizing: border-box;
-    }
-
-    .amount-input {
-      text-align: right;
+      font-size: 13px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     th, td {
       border-bottom: 1px solid #e5e7eb;
-      padding: 8px;
+      padding: 5px;
       text-align: left;
+      font-size: 13px;
     }
 
     th {
       background: #f9fafb;
       color: #6b7280;
-      font-size: 13px;
+      font-size: 12px;
+    }
+
+    .invoice-order {
+      width: 45px;
+      text-align: center;
+    }
+
+    .amount-input {
+      width: 85px;
+      text-align: right;
+    }
+
+    .category-select {
+      width: 90px;
+    }
+
+    .gl-display {
+      width: 60px;
+      text-align: center;
+      background: #f3f4f6;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .type-input {
+      min-width: 100%;
     }
 
     button {
       border: none;
       border-radius: 999px;
-      padding: 10px 16px;
+      padding: 8px 12px;
       font-weight: bold;
       cursor: pointer;
       background: #2563eb;
       color: white;
       margin: 6px 6px 0 0;
+      font-size: 13px;
     }
 
     button:hover {
@@ -101,6 +139,7 @@
     .danger {
       background: #fee2e2;
       color: #b91c1c;
+      padding: 6px 9px;
     }
 
     .danger:hover {
@@ -128,12 +167,13 @@
 
     textarea {
       width: 100%;
-      min-height: 140px;
+      min-height: 120px;
       border: 1px solid #d1d5db;
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 10px;
       font-family: Consolas, monospace;
       box-sizing: border-box;
+      font-size: 13px;
     }
 
     @media (max-width: 900px) {
@@ -153,22 +193,22 @@
 
     <div class="card">
       <label>Month</label>
-      <input id="month" type="month" />
+      <input id="month" type="month" style="max-width: 180px;" />
     </div>
 
     <div class="layout">
       <div class="card">
-        <h2>Monthly Entry</h2>
+        <h2 style="margin-top:0;">Monthly Entry</h2>
 
         <table>
           <thead>
             <tr>
-              <th>Invoice Order</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>GL</th>
+              <th style="width:55px;">Order</th>
+              <th style="width:95px;">Amount</th>
+              <th style="width:95px;">Category</th>
+              <th style="width:70px;">GL</th>
               <th>Type</th>
-              <th>Remove</th>
+              <th style="width:50px;">X</th>
             </tr>
           </thead>
           <tbody id="entryBody"></tbody>
@@ -181,7 +221,7 @@
       </div>
 
       <div class="card">
-        <h2>GL Summary</h2>
+        <h2 style="margin-top:0;">GL Summary</h2>
 
         <table class="summary-table">
           <thead>
@@ -237,6 +277,13 @@
       render();
     }
 
+    function getGLByCategory(category) {
+      if (category === 'Water') return '7902';
+      if (category === 'Gas') return '7905';
+      if (category === 'Waste') return '7906';
+      return '';
+    }
+
     function addRow() {
       rows.push({
         amount: '',
@@ -276,9 +323,7 @@
       rows[index][field] = value;
 
       if (field === 'category') {
-        if (value === 'Water') rows[index].gl = '7902';
-        if (value === 'Gas') rows[index].gl = '7905';
-        if (value === 'Waste') rows[index].gl = '7906';
+        rows[index].gl = getGLByCategory(value);
       }
 
       render();
@@ -296,23 +341,23 @@
 
         tr.innerHTML = `
           <td>
-            <input type="text" value="${row.invoiceOrder || ''}" onchange="updateRow(${index}, 'invoiceOrder', this.value)">
+            <input class="invoice-order" type="text" value="${row.invoiceOrder || ''}" onchange="updateRow(${index}, 'invoiceOrder', this.value)">
           </td>
           <td>
             <input class="amount-input" type="number" step="0.01" value="${row.amount}" ${row.fixed ? 'readonly' : ''} onchange="updateRow(${index}, 'amount', this.value)">
           </td>
           <td>
-            <select onchange="updateRow(${index}, 'category', this.value)">
+            <select class="category-select" onchange="updateRow(${index}, 'category', this.value)">
               <option value="Water" ${row.category === 'Water' ? 'selected' : ''}>Water</option>
               <option value="Gas" ${row.category === 'Gas' ? 'selected' : ''}>Gas</option>
               <option value="Waste" ${row.category === 'Waste' ? 'selected' : ''}>Waste</option>
             </select>
           </td>
           <td>
-            <input type="text" value="${row.gl || ''}" onchange="updateRow(${index}, 'gl', this.value)">
+            <input class="gl-display" type="text" value="${row.gl || ''}" readonly>
           </td>
           <td>
-            <input type="text" value="${row.type || ''}" onchange="updateRow(${index}, 'type', this.value)">
+            <input class="type-input" type="text" value="${row.type || ''}" onchange="updateRow(${index}, 'type', this.value)">
           </td>
           <td>
             <button class="danger" onclick="removeRow(${index})" ${row.fixed ? 'disabled style="opacity:.4; cursor:not-allowed;"' : ''}>X</button>
