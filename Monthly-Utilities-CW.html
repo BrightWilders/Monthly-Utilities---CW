@@ -168,21 +168,17 @@
       text-align: center;
     }
 
-    .summary-copy-btn {
-      padding: 5px 9px;
-      margin: 0;
-      font-size: 11px;
+    .copy-gl-btn {
       background: #e5e7eb;
       color: #111827;
+      padding: 5px 10px;
+      margin: 0;
+      font-size: 11px;
+      min-width: 55px;
     }
 
-    .summary-copy-btn:hover {
+    .copy-gl-btn:hover {
       background: #d1d5db;
-    }
-
-    .summary-copy-btn.copied {
-      background: #dcfce7;
-      color: #166534;
     }
 
     .grand-total {
@@ -221,19 +217,21 @@
       </p>
     </div>
 
+
     <div class="card">
       <label>Month</label>
       <input id="month" type="month" style="max-width: 180px;" />
     </div>
 
+
     <div class="layout">
 
-      <!-- MONTHLY ENTRY -->
       <div class="card">
 
         <h2 style="margin-top:0;">Monthly Entry</h2>
 
         <table>
+
           <thead>
             <tr>
               <th style="width:55px;">Order</th>
@@ -246,9 +244,13 @@
           </thead>
 
           <tbody id="entryBody"></tbody>
+
         </table>
 
-        <button onclick="addRow()">+ Add Row</button>
+
+        <button onclick="addRow()">
+          + Add Row
+        </button>
 
         <button onclick="addCreditRow()">
           + Add Credit Row
@@ -269,7 +271,6 @@
       </div>
 
 
-      <!-- GL SUMMARY -->
       <div class="card">
 
         <h2 style="margin-top:0;">GL Summary</h2>
@@ -288,6 +289,7 @@
 
         </table>
 
+
         <button onclick="copySummary()">
           Copy Summary
         </button>
@@ -303,8 +305,7 @@
 
         <textarea
           id="copyBox"
-          readonly>
-        </textarea>
+          readonly></textarea>
 
       </div>
 
@@ -316,7 +317,6 @@
   <script>
 
     const defaultRows = [
-
       {
         amount: '',
         category: 'Water',
@@ -324,7 +324,6 @@
         type: 'Domestic Water',
         invoiceOrder: '1'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -332,7 +331,6 @@
         type: 'Sewer/Wastewater',
         invoiceOrder: '2'
       },
-
       {
         amount: '',
         category: 'Waste',
@@ -340,7 +338,6 @@
         type: 'Solid Waste',
         invoiceOrder: '3'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -348,7 +345,6 @@
         type: 'Stormwater',
         invoiceOrder: '4'
       },
-
       {
         amount: '',
         category: 'Gas',
@@ -356,7 +352,6 @@
         type: 'Natural Gas',
         invoiceOrder: '5'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -364,7 +359,6 @@
         type: 'Reclaimed Water',
         invoiceOrder: '6'
       },
-
       {
         amount: '',
         category: 'Gas',
@@ -372,7 +366,6 @@
         type: 'Utility Tax on Gas',
         invoiceOrder: '7'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -380,7 +373,6 @@
         type: 'Utility Tax on Water',
         invoiceOrder: '8'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -388,7 +380,6 @@
         type: 'Franchise Fee',
         invoiceOrder: '9'
       },
-
       {
         amount: '',
         category: 'Water',
@@ -396,7 +387,6 @@
         type: 'State Gross Tax',
         invoiceOrder: '10'
       },
-
       {
         amount: '3.07',
         category: 'Water',
@@ -405,7 +395,6 @@
         invoiceOrder: '',
         fixed: true
       }
-
     ];
 
 
@@ -413,102 +402,68 @@
 
 
     function setCurrentMonth() {
-
       const today = new Date();
 
       document.getElementById('month').value =
         today.getFullYear() +
         '-' +
         String(today.getMonth() + 1).padStart(2, '0');
-
     }
 
 
     function money(value) {
-
-      return (Number(value) || 0).toLocaleString(
-        'en-US',
-        {
-          style: 'currency',
-          currency: 'USD'
-        }
-      );
-
+      return (Number(value) || 0).toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      });
     }
 
 
     function resetTemplate() {
-
-      rows =
-        JSON.parse(
-          JSON.stringify(defaultRows)
-        );
-
+      rows = JSON.parse(JSON.stringify(defaultRows));
       render();
-
     }
 
 
     function getGLByCategory(category) {
-
-      if (category === 'Water') {
-        return '7902';
-      }
-
-      if (category === 'Gas') {
-        return '7905';
-      }
-
-      if (category === 'Waste') {
-        return '7906';
-      }
+      if (category === 'Water') return '7902';
+      if (category === 'Gas') return '7905';
+      if (category === 'Waste') return '7906';
 
       return '';
-
     }
 
 
     function addRow() {
-
       rows.push({
-
         amount: '',
         category: 'Water',
         gl: '7902',
         type: '',
         invoiceOrder: ''
-
       });
 
       render();
-
     }
 
 
     function addCreditRow() {
-
       rows.push({
-
         amount: '',
         category: 'Water',
         gl: '7902',
         type: 'Credits',
         invoiceOrder: ''
-
       });
 
       render();
-
     }
 
 
     function clearAmountsOnly() {
-
       rows = rows.map(row => {
 
-        if (row.fixed) {
-          return row;
-        }
+        if (row.fixed) return row;
 
         return {
           ...row,
@@ -518,199 +473,141 @@
       });
 
       render();
-
     }
 
 
     function removeRow(index) {
-
       rows.splice(index, 1);
-
       render();
-
     }
 
 
-    function updateRow(
-      index,
-      field,
-      value
-    ) {
-
+    function updateRow(index, field, value) {
       rows[index][field] = value;
 
       if (field === 'category') {
-
-        rows[index].gl =
-          getGLByCategory(value);
-
+        rows[index].gl = getGLByCategory(value);
       }
 
       render();
-
     }
 
 
     function render() {
 
       const entryBody =
-        document.getElementById(
-          'entryBody'
-        );
+        document.getElementById('entryBody');
 
       entryBody.innerHTML = '';
 
 
-      rows.forEach(
-        (row, index) => {
+      rows.forEach((row, index) => {
 
-          const tr =
-            document.createElement('tr');
-
-
-          if (row.fixed) {
-
-            tr.classList.add(
-              'fixed-fee'
-            );
-
-          }
+        const tr =
+          document.createElement('tr');
 
 
-          if (
-            row.type === 'Credits'
-          ) {
-
-            tr.classList.add(
-              'credit-row'
-            );
-
-          }
-
-
-          tr.innerHTML = `
-
-            <td>
-
-              <input
-                class="invoice-order"
-                type="text"
-                value="${row.invoiceOrder || ''}"
-                onchange="updateRow(${index}, 'invoiceOrder', this.value)"
-              >
-
-            </td>
-
-
-            <td>
-
-              <input
-                class="amount-input"
-                type="number"
-                step="0.01"
-                value="${row.amount}"
-                ${row.fixed ? 'readonly' : ''}
-                onchange="updateRow(${index}, 'amount', this.value)"
-              >
-
-            </td>
-
-
-            <td>
-
-              <select
-                class="category-select"
-                onchange="updateRow(${index}, 'category', this.value)"
-              >
-
-                <option
-                  value="Water"
-                  ${row.category === 'Water' ? 'selected' : ''}
-                >
-                  Water
-                </option>
-
-                <option
-                  value="Gas"
-                  ${row.category === 'Gas' ? 'selected' : ''}
-                >
-                  Gas
-                </option>
-
-                <option
-                  value="Waste"
-                  ${row.category === 'Waste' ? 'selected' : ''}
-                >
-                  Waste
-                </option>
-
-              </select>
-
-            </td>
-
-
-            <td>
-
-              <input
-                class="gl-display"
-                type="text"
-                value="${row.gl || ''}"
-                readonly
-              >
-
-            </td>
-
-
-            <td>
-
-              <input
-                class="type-input"
-                type="text"
-                value="${row.type || ''}"
-                onchange="updateRow(${index}, 'type', this.value)"
-              >
-
-            </td>
-
-
-            <td>
-
-              <button
-                class="danger"
-                onclick="removeRow(${index})"
-                ${
-                  row.fixed
-                    ? 'disabled style="opacity:.4; cursor:not-allowed;"'
-                    : ''
-                }
-              >
-                X
-              </button>
-
-            </td>
-
-          `;
-
-
-          entryBody.appendChild(tr);
-
+        if (row.fixed) {
+          tr.classList.add('fixed-fee');
         }
-      );
+
+
+        if (row.type === 'Credits') {
+          tr.classList.add('credit-row');
+        }
+
+
+        tr.innerHTML = `
+          <td>
+            <input
+              class="invoice-order"
+              type="text"
+              value="${row.invoiceOrder || ''}"
+              onchange="updateRow(${index}, 'invoiceOrder', this.value)">
+          </td>
+
+          <td>
+            <input
+              class="amount-input"
+              type="number"
+              step="0.01"
+              value="${row.amount}"
+              ${row.fixed ? 'readonly' : ''}
+              onchange="updateRow(${index}, 'amount', this.value)">
+          </td>
+
+          <td>
+            <select
+              class="category-select"
+              onchange="updateRow(${index}, 'category', this.value)">
+
+              <option
+                value="Water"
+                ${row.category === 'Water' ? 'selected' : ''}>
+                Water
+              </option>
+
+              <option
+                value="Gas"
+                ${row.category === 'Gas' ? 'selected' : ''}>
+                Gas
+              </option>
+
+              <option
+                value="Waste"
+                ${row.category === 'Waste' ? 'selected' : ''}>
+                Waste
+              </option>
+
+            </select>
+          </td>
+
+          <td>
+            <input
+              class="gl-display"
+              type="text"
+              value="${row.gl || ''}"
+              readonly>
+          </td>
+
+          <td>
+            <input
+              class="type-input"
+              type="text"
+              value="${row.type || ''}"
+              onchange="updateRow(${index}, 'type', this.value)">
+          </td>
+
+          <td>
+            <button
+              class="danger"
+              onclick="removeRow(${index})"
+              ${
+                row.fixed
+                  ? 'disabled style="opacity:.4; cursor:not-allowed;"'
+                  : ''
+              }>
+              X
+            </button>
+          </td>
+        `;
+
+
+        entryBody.appendChild(tr);
+
+      });
 
 
       renderSummary();
-
     }
 
 
     function renderSummary() {
 
       const summary = {
-
         '7902': 0,
         '7905': 0,
         '7906': 0
-
       };
 
 
@@ -723,10 +620,8 @@
           Number(row.amount) || 0;
 
 
-        if (!summary[gl]) {
-
+        if (!Object.prototype.hasOwnProperty.call(summary, gl)) {
           summary[gl] = 0;
-
         }
 
 
@@ -736,9 +631,7 @@
 
 
       const summaryBody =
-        document.getElementById(
-          'summaryBody'
-        );
+        document.getElementById('summaryBody');
 
 
       summaryBody.innerHTML = '';
@@ -751,39 +644,83 @@
         .sort()
         .forEach(gl => {
 
-          grandTotal +=
+          const amount =
             summary[gl];
+
+
+          grandTotal += amount;
 
 
           const tr =
             document.createElement('tr');
 
 
-          tr.innerHTML = `
+          const glCell =
+            document.createElement('td');
 
-            <td>
-              ${gl}
-            </td>
-
-            <td>
-              ${money(summary[gl])}
-            </td>
-
-            <td>
-
-              <button
-                class="summary-copy-btn"
-                onclick="copyGLAmount(${summary[gl]}, this)"
-              >
-                Copy
-              </button>
-
-            </td>
-
-          `;
+          glCell.textContent =
+            gl;
 
 
-          summaryBody.appendChild(tr);
+          const amountCell =
+            document.createElement('td');
+
+          amountCell.textContent =
+            money(amount);
+
+
+          const copyCell =
+            document.createElement('td');
+
+
+          const copyButton =
+            document.createElement('button');
+
+
+          copyButton.type =
+            'button';
+
+          copyButton.className =
+            'copy-gl-btn';
+
+          copyButton.textContent =
+            'Copy';
+
+
+          copyButton.addEventListener(
+            'click',
+            function () {
+
+              copyAmount(
+                amount,
+                copyButton
+              );
+
+            }
+          );
+
+
+          copyCell.appendChild(
+            copyButton
+          );
+
+
+          tr.appendChild(
+            glCell
+          );
+
+          tr.appendChild(
+            amountCell
+          );
+
+          tr.appendChild(
+            copyCell
+          );
+
+
+          summaryBody.appendChild(
+            tr
+          );
 
         });
 
@@ -797,28 +734,67 @@
       );
 
 
-      totalRow.innerHTML = `
+      const totalLabel =
+        document.createElement('td');
 
-        <td>
-          Grand Total
-        </td>
+      totalLabel.textContent =
+        'Grand Total';
 
-        <td>
-          ${money(grandTotal)}
-        </td>
 
-        <td>
+      const totalAmount =
+        document.createElement('td');
 
-          <button
-            class="summary-copy-btn"
-            onclick="copyGLAmount(${grandTotal}, this)"
-          >
-            Copy
-          </button>
+      totalAmount.textContent =
+        money(grandTotal);
 
-        </td>
 
-      `;
+      const totalCopyCell =
+        document.createElement('td');
+
+
+      const totalCopyButton =
+        document.createElement('button');
+
+
+      totalCopyButton.type =
+        'button';
+
+      totalCopyButton.className =
+        'copy-gl-btn';
+
+      totalCopyButton.textContent =
+        'Copy';
+
+
+      totalCopyButton.addEventListener(
+        'click',
+        function () {
+
+          copyAmount(
+            grandTotal,
+            totalCopyButton
+          );
+
+        }
+      );
+
+
+      totalCopyCell.appendChild(
+        totalCopyButton
+      );
+
+
+      totalRow.appendChild(
+        totalLabel
+      );
+
+      totalRow.appendChild(
+        totalAmount
+      );
+
+      totalRow.appendChild(
+        totalCopyCell
+      );
 
 
       summaryBody.appendChild(
@@ -830,7 +806,6 @@
         summary,
         grandTotal
       );
-
     }
 
 
@@ -840,9 +815,7 @@
     ) {
 
       const monthValue =
-        document.getElementById(
-          'month'
-        ).value;
+        document.getElementById('month').value;
 
 
       const monthText =
@@ -863,10 +836,8 @@
 
 
       if (monthText) {
-
         text +=
           `${monthText} Utilities GL Summary\n\n`;
-
       }
 
 
@@ -891,125 +862,127 @@
       document.getElementById(
         'copyBox'
       ).value = text;
-
     }
 
 
-    /*
-      COPY ONE GL AMOUNT
-
-      Copies the raw amount only.
-      Example:
-      $1,245.37 becomes 1245.37
-    */
-
-    function copyGLAmount(
+    function copyAmount(
       amount,
       button
     ) {
 
-      const copyValue =
+      const value =
         Number(amount).toFixed(2);
 
 
-      if (
-        navigator.clipboard &&
-        window.isSecureContext
-      ) {
-
-        navigator.clipboard
-          .writeText(copyValue)
-          .then(() => {
-
-            showCopied(button);
-
-          });
-
-      } else {
-
-        const temp =
-          document.createElement(
-            'textarea'
-          );
+      const temp =
+        document.createElement('textarea');
 
 
-        temp.value =
-          copyValue;
+      temp.value =
+        value;
 
 
-        temp.style.position =
-          'fixed';
-
-
-        temp.style.opacity =
-          '0';
-
-
-        document.body.appendChild(
-          temp
-        );
-
-
-        temp.focus();
-
-        temp.select();
-
-
-        document.execCommand(
-          'copy'
-        );
-
-
-        document.body.removeChild(
-          temp
-        );
-
-
-        showCopied(button);
-
-      }
-
-    }
-
-
-    function showCopied(button) {
-
-      const originalText =
-        button.textContent;
-
-
-      button.textContent =
-        'Copied!';
-
-
-      button.classList.add(
-        'copied'
+      temp.setAttribute(
+        'readonly',
+        ''
       );
 
 
-      setTimeout(() => {
+      temp.style.position =
+        'fixed';
+
+      temp.style.top =
+        '-1000px';
+
+      temp.style.left =
+        '-1000px';
+
+
+      document.body.appendChild(
+        temp
+      );
+
+
+      temp.focus();
+
+      temp.select();
+
+      temp.setSelectionRange(
+        0,
+        temp.value.length
+      );
+
+
+      let copied = false;
+
+
+      try {
+
+        copied =
+          document.execCommand('copy');
+
+      } catch (error) {
+
+        copied = false;
+
+      }
+
+
+      document.body.removeChild(
+        temp
+      );
+
+
+      if (copied) {
 
         button.textContent =
-          originalText;
+          'Copied!';
 
-        button.classList.remove(
-          'copied'
+
+        setTimeout(
+          function () {
+
+            button.textContent =
+              'Copy';
+
+          },
+          1000
         );
 
-      }, 1000);
+      } else {
 
+        button.textContent =
+          'Try Again';
+
+
+        setTimeout(
+          function () {
+
+            button.textContent =
+              'Copy';
+
+          },
+          1200
+        );
+
+      }
     }
 
 
     function copySummary() {
 
       const copyBox =
-        document.getElementById(
-          'copyBox'
-        );
+        document.getElementById('copyBox');
 
+
+      copyBox.focus();
 
       copyBox.select();
+
+      copyBox.setSelectionRange(
+        0,
+        copyBox.value.length
+      );
 
 
       document.execCommand(
@@ -1020,17 +993,8 @@
       alert(
         'Summary copied!'
       );
-
     }
 
-
-    /*
-      ENTER KEY
-
-      When entering amounts,
-      pressing Enter moves to
-      the next amount field.
-    */
 
     document.addEventListener(
       'keydown',
@@ -1061,15 +1025,12 @@
 
 
             const index =
-              inputs.indexOf(
-                active
-              );
+              inputs.indexOf(active);
 
 
             if (
               index > -1 &&
-              index <
-                inputs.length - 1
+              index < inputs.length - 1
             ) {
 
               inputs[
@@ -1082,11 +1043,8 @@
               ].select();
 
             }
-
           }
-
         }
-
       }
     );
 
